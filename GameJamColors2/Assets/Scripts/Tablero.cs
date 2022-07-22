@@ -72,6 +72,21 @@ public class Tablero : MonoBehaviour
         }
     }
 
+    public Vector2 IndexToCoord(int index)
+    {
+        Vector2 coord;
+
+        coord.x = (int)(index % y);
+        coord.y = (int)(index / y);
+
+        return coord;
+    }
+
+    public int CoordToIndex(Vector2 coord)
+    {
+        return (int)(coord.x + (coord.y * y));
+    }
+
     // Update is called once per frame
     void Update()
     {
