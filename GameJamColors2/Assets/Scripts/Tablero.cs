@@ -20,7 +20,7 @@ public class Tablero : MonoBehaviour
         //indices adyadcentes
         public int up, left, right, down;
         public bool transitable;
-       // public int coste;
+        // public int coste;
     }
 
 
@@ -28,48 +28,52 @@ public class Tablero : MonoBehaviour
     {
         indexes = new nodo[x * y];
 
-        Vector3 pos = new Vector2(0,0);
+        Vector3 pos = new Vector2(0, 0);
         Vector3 sc = tile.transform.localScale;
-        pos.x = -sc.x * (x/2.0f) - margin*((x-1)/2.0f);
-        for(int i=0; i<x; i++)
+        pos.x = -sc.x * (x / 2.0f) - margin * ((x - 1) / 2.0f);
+        for (int i = 0; i < x; i++)
         {
-            pos.z = -sc.z * (y/2.0f) - margin * ((y - 1) / 2.0f);
-            for(int j=0; j<y; j++)
+            pos.z = -sc.z * (y / 2.0f) - margin * ((y - 1) / 2.0f);
+            for (int j = 0; j < y; j++)
             {
                 Instantiate(tile, pos, Quaternion.identity, this.transform);
                 pos.z += sc.z + margin;
 
 
                 //asignación de indices
+                int id = i * x + j;
 
-                indexes[i + j].left = i + j - 1;
-                indexes[i + j].right = i + j + 1;
-                if ((i+j)%y == 0)
+                indexes[id].left = id - 1;
+                indexes[id].right = id + 1;
+                if ((id) % y == 0)
                 {
-                    indexes[i + j].left = -1;
+                    indexes[id].left = -1;
                 }
-                else if ((i + j) % y == y - 1)
+                else if ((id) % y == y - 1)
                 {
-                    indexes[i + j].right = -1;
-                }
-
-                indexes[i + j].down = i + j + y;
-                indexes[i + j].up = i + j - y;
-
-                if ((i+j) < y)
-                {
-                    indexes[i + j].up = -1;
-                }
-                else if ((i+j) >= y * (x - 1))
-                {
-                    indexes[i + j].down = -1;
+                    indexes[id].right = -1;
                 }
 
-                indexes[i + j].transitable = true;
+                indexes[id].down = id + y;
+                indexes[id].up = id - y;
+
+                if (id < y)
+                {
+                    indexes[id].up = -1;
+                }
+                else if (id >= y * (x - 1))
+                {
+                    indexes[id].down = -1;
+                }
+
+                indexes[id].transitable = true;
 
             }
             pos.x += sc.x + margin;
         }
+
+        this.transform.GetChild(0).gameObject.AddComponent<EndTile>();
+        this.transform.GetChild(transform.childCount-1).gameObject.AddComponent<EndTile>().heaven = false;
     }
 
     public Vector2 IndexToCoord(int index)
@@ -90,6 +94,6 @@ public class Tablero : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }
