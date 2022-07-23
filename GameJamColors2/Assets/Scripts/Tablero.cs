@@ -33,12 +33,12 @@ public class Tablero : MonoBehaviour
         indexes = new nodo[x * y];
         tiles = new Tile[x * y];
 
-        Vector3 pos = new Vector2(0, 0);
+        Vector3 pos = new Vector3(0, 0, 0);
         Vector3 sc = tile.transform.localScale;
-        pos.x = -sc.x * (x / 2.0f) - margin * ((x - 1) / 2.0f);
+        pos.x = -sc.x * (x / 2.0f) + sc.x/2 - margin * ((x - 1) / 2.0f);
         for (int i = 0; i < x; i++)
         {
-            pos.z = -sc.z * (y / 2.0f) - margin * ((y - 1) / 2.0f);
+            pos.z = -sc.z * (y / 2.0f) + sc.y/2 - margin * ((y - 1) / 2.0f);
             for (int j = 0; j < y; j++)
             {
                 //asignación de indices
