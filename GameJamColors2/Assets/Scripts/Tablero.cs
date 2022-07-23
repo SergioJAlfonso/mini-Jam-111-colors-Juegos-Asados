@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+public enum direccion { Up,Down,Left,Right };
+
 public class Tablero : MonoBehaviour
 {
     [SerializeField]
@@ -14,6 +17,7 @@ public class Tablero : MonoBehaviour
 
     //colocar los nodos e indicies, lo que utilizaria la ia para moverse por turnos.
     nodo[] indexes;
+    Tile[] tiles;
     //la estructura del nodo
     public struct nodo
     {
@@ -27,6 +31,7 @@ public class Tablero : MonoBehaviour
     void Start()
     {
         indexes = new nodo[x * y];
+        tiles = new Tile[x * y];
 
         Vector3 pos = new Vector2(0, 0);
         Vector3 sc = tile.transform.localScale;
@@ -36,12 +41,18 @@ public class Tablero : MonoBehaviour
             pos.z = -sc.z * (y / 2.0f) - margin * ((y - 1) / 2.0f);
             for (int j = 0; j < y; j++)
             {
-                Instantiate(tile, pos, Quaternion.identity, this.transform);
+                //asignación de indices
+                int id = i * y + j;
+
+                var a = Instantiate(tile, pos, Quaternion.identity, this.transform);
+                a.AddComponent<BoxCollider>();
+                var b = a.AddComponent<Tile>();
+                tiles[id] = b;
+                b.index = id;
+                b.table = this;
+
                 pos.z += sc.z + margin;
 
-
-                //asignación de indices
-                int id = i * x + j;
 
                 indexes[id].left = id - 1;
                 indexes[id].right = id + 1;
@@ -90,6 +101,41 @@ public class Tablero : MonoBehaviour
     {
         return (int)(coord.x + (coord.y * y));
     }
+
+    public Tile getTileByIndex(int index)
+    {
+        return tiles[index];
+    }
+    public bool TransitableTile(int index)
+    {
+        return indexes[index].transitable;
+    }
+    public int NextMove(int index, direccion dir)
+    {
+        int next;
+
+        switch (dir)
+        {
+            case direccion.Up:
+                next = indexes[index].up;
+                break;
+            case direccion.Down:
+                next = indexes[index].down;
+                break;
+            case direccion.Left:
+                next = indexes[index].left;
+                break;
+            case direccion.Right:
+                next = indexes[index].right;
+                break;
+            default:
+                next = -1;
+                break;
+        }
+
+        return next;
+    }
+
 
     // Update is called once per frame
     void Update()
