@@ -23,12 +23,12 @@ public class GameManager : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
+        Random.InitState((int)DateTime.Now.Ticks);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        Random.InitState((int)DateTime.Now.Ticks);
     }
 
     // Update is called once per frame
