@@ -36,52 +36,11 @@ public class PlayerController : MonoBehaviour
         if (currentTile == null) return;
         //utilizar la infor de eso y el tablero o la de la tile para navegar, de momento le tepeo a la posicion
 
-        Tile posible = null;
-
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            // Rotate map
-            // Indicar por UI que A izqda D dcha
-            rotate = true;
-        }
-
-        if (!rotating && Input.GetKeyDown(KeyCode.W))
-        {
-            if (!rotate)
-                posible = currentTile.TryNextMove(direccion.Up);
-        }
-        else if (!rotating && Input.GetKeyDown(KeyCode.A))
-        {
-            //left
-            if (!rotate)
-                posible = currentTile.TryNextMove(direccion.Left);
-            else
-                startRotation(-90);
-        }
-        else if (!rotating && Input.GetKeyDown(KeyCode.S))
-        {
-            if (!rotate)
-                posible = currentTile.TryNextMove(direccion.Down);
-            //down
-        }
-        else if (!rotating && Input.GetKeyDown(KeyCode.D))
-        {
-            //right
-            if (!rotate)
-                posible = currentTile.TryNextMove(direccion.Right);
-            else
-                startRotation(90);
-        }
+        // Input
+        manageInput();
 
         // Rotacion en curso
         checkRotation();
-
-        if (posible != null)
-        {
-            //move
-            this.transform.position = posible.transform.position + new Vector3(0, 2, 0);
-            currentTile = posible;
-        }
     }
 
     void startRotation(int rotDir)
@@ -103,6 +62,52 @@ public class PlayerController : MonoBehaviour
                 Debug.Log("end rot");
                 rotating = false;
             }
+        }
+    }
+    void manageInput()
+    {
+        Tile posible = null;
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            // Rotate map
+            // Indicar por UI que A izqda D dcha
+            rotate = true;
+        }
+
+        if (!rotating && Input.GetKeyDown(KeyCode.W))
+        {
+            if (!rotate)
+                posible = currentTile.TryNextMove(direccion.Up);
+        }
+        else if (!rotating && Input.GetKeyDown(KeyCode.A))
+        {
+            //left
+            if (!rotate)
+                posible = currentTile.TryNextMove(direccion.Left);
+            else
+                startRotation(90);
+        }
+        else if (!rotating && Input.GetKeyDown(KeyCode.S))
+        {
+            if (!rotate)
+                posible = currentTile.TryNextMove(direccion.Down);
+            //down
+        }
+        else if (!rotating && Input.GetKeyDown(KeyCode.D))
+        {
+            //right
+            if (!rotate)
+                posible = currentTile.TryNextMove(direccion.Right);
+            else
+                startRotation(-90);
+        }
+
+        if (posible != null)
+        {
+            //move
+            this.transform.position = posible.transform.position + new Vector3(0, 2, 0);
+            currentTile = posible;
         }
     }
 }
