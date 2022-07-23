@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
     {
         //preguntar a su detector cual es su casilla, //actualizar por turno tal vez mejor, depende de como se queira el movimiento
         currentTile = MyDetector.currentTile;
+        if (currentTile == null) return;
         //utilizar la infor de eso y el tablero o la de la tile para navegar, de momento le tepeo a la posicion
 
         Tile posible = null;
