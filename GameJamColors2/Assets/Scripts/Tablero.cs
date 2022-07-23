@@ -102,10 +102,10 @@ public class Tablero : MonoBehaviour
                 z++;
         }
 
-        transform.GetChild(0).gameObject.AddComponent<EndTile>();
-        Instantiate(Resources.Load("HeavenDeco") as GameObject, transform.GetChild(0).transform);
-        transform.GetChild(transform.childCount - 1).gameObject.AddComponent<EndTile>().heaven = false;
-        Instantiate(Resources.Load("HellDeco") as GameObject, transform.GetChild(transform.childCount - 1).transform);
+        transform.GetChild(x-1).gameObject.AddComponent<EndTile>();
+        Instantiate(Resources.Load("HeavenDeco") as GameObject, transform.GetChild(x - 1).transform);
+        transform.GetChild(transform.childCount - x).gameObject.AddComponent<EndTile>().heaven = false;
+        Instantiate(Resources.Load("HellDeco") as GameObject, transform.GetChild(transform.childCount - x).transform);
     }
 
     public Vector2 IndexToCoord(int index)
