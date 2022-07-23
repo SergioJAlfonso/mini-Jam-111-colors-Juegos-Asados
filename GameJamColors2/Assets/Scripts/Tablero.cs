@@ -21,6 +21,8 @@ public class Tablero : MonoBehaviour
     //colocar los nodos e indicies, lo que utilizaria la ia para moverse por turnos.
     nodo[] indexes;
     Tile[] tiles;
+
+    System.Random rand;
     //la estructura del nodo
     public struct nodo
     {
@@ -33,6 +35,7 @@ public class Tablero : MonoBehaviour
 
     void Start()
     {
+        rand = new System.Random();
         byte[] by = txtLvl.bytes;
         int z = 0;
         int tam = 0;
@@ -174,9 +177,13 @@ public class Tablero : MonoBehaviour
                 //Modificar obsSize con los prefabs de cada carpeta
                 case '1':
                     route += "Obs1/";
+
+                    route += rand.Next(0, obsSize);
                     break;
                 case '2':
                     route += "Obs2/";
+
+                    route += rand.Next(0, obsSize);
                     break;
             }
             if(obsSize != 0)
