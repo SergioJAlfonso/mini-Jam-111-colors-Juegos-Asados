@@ -12,10 +12,20 @@ public class PlayerController : MonoBehaviour
     //Tablero table;
     private Tile currentTile;
 
+    // Rotation
+    [SerializeField]
+    Transform obstacles;
+
+    [SerializeField]
+    float lerpSpeed = 0.05f;
+    float rotateTime = 0;
+    bool rotate = false, rotating = false;
+    Quaternion targetRotation;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -27,29 +37,44 @@ public class PlayerController : MonoBehaviour
         //utilizar la infor de eso y el tablero o la de la tile para navegar, de momento le tepeo a la posicion
 
         Tile posible = null;
-        
-        if (Input.GetKeyDown(KeyCode.W))
+
+        if (Input.GetKeyDown(KeyCode.E))
         {
-            posible = currentTile.TryNextMove(direccion.Up);
+            // Rotate map
+            // Indicar por UI que A izqda D dcha
+            rotate = true;
         }
-        else
-        if (Input.GetKeyDown(KeyCode.A))
+
+        if (!rotating && Input.GetKeyDown(KeyCode.W))
         {
-            posible = currentTile.TryNextMove(direccion.Left);
+            if (!rotate)
+                posible = currentTile.TryNextMove(direccion.Up);
+        }
+        else if (!rotating && Input.GetKeyDown(KeyCode.A))
+        {
             //left
+            if (!rotate)
+                posible = currentTile.TryNextMove(direccion.Left);
+            else
+                startRotation(-90);
         }
-        else
-        if (Input.GetKeyDown(KeyCode.S))
+        else if (!rotating && Input.GetKeyDown(KeyCode.S))
         {
-            posible = currentTile.TryNextMove(direccion.Down);
+            if (!rotate)
+                posible = currentTile.TryNextMove(direccion.Down);
             //down
         }
-        else
-        if (Input.GetKeyDown(KeyCode.D))
+        else if (!rotating && Input.GetKeyDown(KeyCode.D))
         {
-            posible = currentTile.TryNextMove(direccion.Right);
             //right
+            if (!rotate)
+                posible = currentTile.TryNextMove(direccion.Right);
+            else
+                startRotation(90);
         }
+
+        // Rotacion en curso
+        checkRotation();
 
         if (posible != null)
         {
@@ -57,6 +82,27 @@ public class PlayerController : MonoBehaviour
             this.transform.position = posible.transform.position + new Vector3(0, 2, 0);
             currentTile = posible;
         }
+    }
 
+    void startRotation(int rotDir)
+    {
+        targetRotation = Quaternion.Euler(0, obstacles.rotation.eulerAngles.y + rotDir, 0);
+        rotateTime = 0;
+        rotating = true;
+        rotate = false;
+    }
+
+    void checkRotation()
+    {
+        if (rotating)
+        {
+            rotateTime += Time.deltaTime * lerpSpeed;
+            obstacles.rotation = Quaternion.Lerp(obstacles.rotation, targetRotation, rotateTime);
+            if (rotateTime > lerpSpeed)
+            {
+                Debug.Log("end rot");
+                rotating = false;
+            }
+        }
     }
 }
