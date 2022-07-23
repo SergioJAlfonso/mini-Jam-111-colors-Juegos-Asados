@@ -1,18 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-public enum direccion { Up,Down,Left,Right };
+public enum direccion { Up, Down, Left, Right };
 
 public class Tablero : MonoBehaviour
 {
     [SerializeField]
     GameObject tile;
-    [SerializeField]
-    int x, y;
+    //[SerializeField]
+    int x;
     [SerializeField]
     float margin;
+    [SerializeField]
+    TextAsset txtLvl;
     // Start is called before the first frame update
 
     //colocar los nodos e indicies, lo que utilizaria la ia para moverse por turnos.
@@ -30,19 +33,34 @@ public class Tablero : MonoBehaviour
 
     void Start()
     {
-        indexes = new nodo[x * y];
-        tiles = new Tile[x * y];
+        byte[] by = txtLvl.bytes;
+        int z = 0;
+        int tam = 0;
+        while (Convert.ToChar(by[z]) != '\n')
+        {
+            if (by[z] >= 48)
+            {
+                tam *= 10;
+                tam += by[z] - 48;
+            }
+            z++;
+        }
+        x = tam;
+
+        indexes = new nodo[x * x];
+        tiles = new Tile[x * x];
 
         Vector3 pos = new Vector3(0, 0, 0);
         Vector3 sc = tile.transform.localScale;
-        pos.x = -sc.x * (x / 2.0f) + sc.x/2 - margin * ((x - 1) / 2.0f);
+        pos.x = -sc.x * (x / 2.0f) + sc.x / 2 - margin * ((x - 1) / 2.0f);
         for (int i = 0; i < x; i++)
         {
-            pos.z = -sc.z * (y / 2.0f) + sc.y/2 - margin * ((y - 1) / 2.0f);
-            for (int j = 0; j < y; j++)
+            pos.z = -sc.z * (x / 2.0f) + sc.y / 2 - margin * ((x - 1) / 2.0f);
+            for (int j = 0; j < x; j++)
             {
+                z++;
                 //asignación de indices
-                int id = i * y + j;
+                int id = i * x + j;
 
                 var a = Instantiate(tile, pos, Quaternion.identity, this.transform);
                 a.AddComponent<BoxCollider>();
@@ -56,50 +74,53 @@ public class Tablero : MonoBehaviour
 
                 indexes[id].left = id - 1;
                 indexes[id].right = id + 1;
-                if ((id) % y == 0)
+                if ((id) % x == 0)
                 {
                     indexes[id].left = -1;
                 }
-                else if ((id) % y == y - 1)
+                else if ((id) % x == x - 1)
                 {
                     indexes[id].right = -1;
                 }
 
-                indexes[id].down = id + y;
-                indexes[id].up = id - y;
+                indexes[id].down = id + x;
+                indexes[id].up = id - x;
 
-                if (id < y)
+                if (id < x)
                 {
                     indexes[id].up = -1;
                 }
-                else if (id >= y * (x - 1))
+                else if (id >= x * (x - 1))
                 {
                     indexes[id].down = -1;
                 }
 
-                indexes[id].transitable = true;
-
+                ProcesNumber(by[z], id);
             }
             pos.x += sc.x + margin;
+            while (z < by.Length && Convert.ToChar(by[z]) != '\n')
+                z++;
         }
 
-        this.transform.GetChild(0).gameObject.AddComponent<EndTile>();
-        this.transform.GetChild(transform.childCount-1).gameObject.AddComponent<EndTile>().heaven = false;
+        transform.GetChild(0).gameObject.AddComponent<EndTile>();
+        Instantiate(Resources.Load("HeavenDeco") as GameObject, transform.GetChild(0).transform);
+        transform.GetChild(transform.childCount - 1).gameObject.AddComponent<EndTile>().heaven = false;
+        Instantiate(Resources.Load("HellDeco") as GameObject, transform.GetChild(transform.childCount - 1).transform);
     }
 
     public Vector2 IndexToCoord(int index)
     {
         Vector2 coord;
 
-        coord.x = (int)(index % y);
-        coord.y = (int)(index / y);
+        coord.x = (int)(index % x);
+        coord.y = (int)(index / x);
 
         return coord;
     }
 
     public int CoordToIndex(Vector2 coord)
     {
-        return (int)(coord.x + (coord.y * y));
+        return (int)(coord.x + (coord.y * x));
     }
 
     public Tile getTileByIndex(int index)
@@ -136,6 +157,32 @@ public class Tablero : MonoBehaviour
         return next;
     }
 
+    void ProcesNumber(byte b, int id)
+    {
+        char x = Convert.ToChar(b);
+        if (x == '0')
+        {
+            indexes[id].transitable = true;
+        }
+        else
+        {
+            indexes[id].transitable = false;
+            string route = "../Prefabs/";
+            int obsSize = 0;
+            switch (x)
+            {
+                //Modificar obsSize con los prefabs de cada carpeta
+                case '1':
+                    route += "Obs1/";
+                    break;
+                case '2':
+                    route += "Obs2/";
+                    break;
+            }
+            if(obsSize != 0)
+                Instantiate(Resources.Load(route) as GameObject, transform.GetChild(id).transform);
+        }
+    }
 
     // Update is called once per frame
     void Update()
