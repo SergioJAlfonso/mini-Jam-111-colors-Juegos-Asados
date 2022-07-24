@@ -49,6 +49,12 @@ public class PlayerController : MonoBehaviour
         rotateTime = 0;
         rotating = true;
         rotate = false;
+        //desocupar todas las casillas de obstaculos
+        foreach (Transform a in obstacles)
+        {
+            a.gameObject.GetComponent<Obstacle>().ChangeWalkable(true);
+        }
+
     }
 
     void checkRotation()
@@ -61,6 +67,12 @@ public class PlayerController : MonoBehaviour
             {
                 Debug.Log("end rot");
                 rotating = false;
+                //octualizar obstaculos
+                foreach (Transform a in obstacles)
+                {
+                    a.gameObject.GetComponent<Obstacle>().refrexCurrentTile();
+                    a.gameObject.GetComponent<Obstacle>().ChangeWalkable(false);
+                }
             }
         }
     }
