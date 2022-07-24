@@ -204,11 +204,10 @@ public class Tablero : MonoBehaviour
         return Vector3.Distance(posA, posB);
     }
 
-
     public int ExitIndex(bool heaven)
     {
         if (heaven) return 0;
-        else return transform.childCount - 1;
+        else return transform.childCount - x;
     }
 
     public Vector2 IndexToCoord(int index)

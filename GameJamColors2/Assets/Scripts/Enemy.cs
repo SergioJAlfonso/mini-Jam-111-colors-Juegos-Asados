@@ -45,7 +45,7 @@ public class Enemy : MonoBehaviour
 
             currentTile = nextTile;
             //move player also
-            player.DoMove(dir);
+            player.DoMove(dir, true);
         }
 
     }

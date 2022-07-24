@@ -90,7 +90,7 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-    public void DoMove(direccion dir)
+    public void DoMove(direccion dir, bool enem)
     {
         Tile posible = currentTile.TryNextMove(dir);
         if (posible != null)
@@ -101,6 +101,8 @@ public class PlayerController : MonoBehaviour
             moving = true;
             movementTime = 0;
             currentTile = posible;
+            if(!enem)
+                GameManager.instance.decreaseActions();
         }
     }
     void manageInput()
@@ -115,38 +117,34 @@ public class PlayerController : MonoBehaviour
         if (!rotating && !moving && Input.GetKeyDown(KeyCode.W))
         {
             if (!rotate)
-            {
-                DoMove(direccion.Up);
-                GameManager.instance.decreaseActions();
-            }
+                DoMove(direccion.Up, false);
         }
         else if (!rotating && !moving && Input.GetKeyDown(KeyCode.A))
         {
             //left
             if (!rotate)
-                DoMove(direccion.Left);
+                DoMove(direccion.Left, false);
             else
+            {
                 startRotation(90);
-
-            GameManager.instance.decreaseActions();
+                GameManager.instance.decreaseActions();
+            }
         }
         else if (!rotating && !moving && Input.GetKeyDown(KeyCode.S))
         {
             if (!rotate)
-            {
-                DoMove(direccion.Down);
-                GameManager.instance.decreaseActions();
-            }
+                DoMove(direccion.Down, false);
         }
         else if (!rotating && !moving && Input.GetKeyDown(KeyCode.D))
         {
             //right
             if (!rotate)
-                DoMove(direccion.Right);
+                DoMove(direccion.Right, false);
             else
+            {
                 startRotation(-90);
-
-            GameManager.instance.decreaseActions();
+                GameManager.instance.decreaseActions();
+            }
         }
     }
 }
