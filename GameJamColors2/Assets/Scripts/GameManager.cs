@@ -10,8 +10,9 @@ public class GameManager : MonoBehaviour
     public float mainVolSlider = 0.5f,
                  SFXVolSlider = 0.5f,
                  musicVolSlider = 0.5f;
-    public bool gameIsPaused, needToPause, needToResume, playerTurn;
+    public bool gameIsPaused, needToPause, needToResume, playerTurn, moveZombie;
     int currActions, maxActions = 2;
+    float zombieTurnTime1 = 1.0f, zombieTurnTime2 = 1.0f, zombieTimer;
 
     void Awake()
     {
@@ -31,13 +32,22 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         playerTurn = true;
+        moveZombie = !playerTurn;
         currActions = maxActions;
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        if (!playerTurn)
+        {
+            zombieTimer -= Time.deltaTime;
+            if(zombieTimer <= 0)
+            {
+                moveZombie = true;
+                playerTurn = true;
+            }
+        }
     }
 
     public void MainSliderState(float volume)
@@ -60,7 +70,8 @@ public class GameManager : MonoBehaviour
             currActions = maxActions;
             playerTurn = false;
             Debug.Log("Fin de turno");
+
+            zombieTimer = zombieTurnTime1;
         }
     }
-       
 }

@@ -17,10 +17,11 @@ public class PlayerController : MonoBehaviour
     Transform obstacles;
 
     [SerializeField]
-    float lerpSpeed = 0.05f;
-    float rotateTime = 0;
-    bool rotate = false, rotating = false;
+    float rotateLerpSpeed = 0.05f, posLerpSpeed = 0.5f;
+    float rotateTime = 0, movementTime = 0;
+    bool rotate = false, rotating = false, moving = false;
     Quaternion targetRotation;
+    Vector3 targetPosition;
 
     // Start is called before the first frame update
     void Start()
@@ -37,9 +38,11 @@ public class PlayerController : MonoBehaviour
         //utilizar la infor de eso y el tablero o la de la tile para navegar, de momento le tepeo a la posicion
 
         // Input
-        //if(GameManager.instance.playerTurn)
+        if (GameManager.instance.playerTurn)
             manageInput();
 
+        // Movimiento en curso
+        checkMovement();
         // Rotacion en curso
         checkRotation();
     }
@@ -61,11 +64,10 @@ public class PlayerController : MonoBehaviour
     {
         if (rotating)
         {
-            rotateTime += Time.deltaTime * lerpSpeed;
+            rotateTime += Time.deltaTime * rotateLerpSpeed;
             obstacles.rotation = Quaternion.Lerp(obstacles.rotation, targetRotation, rotateTime);
             if (rotateTime > 0.1f)
             {
-                //Debug.Log("end rot");
                 rotating = false;
                 //octualizar obstaculos
                 foreach (Transform a in obstacles)
@@ -76,18 +78,31 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-
+    void checkMovement()
+    {
+        if (moving)
+        {
+            movementTime += Time.deltaTime * posLerpSpeed;
+            transform.position = Vector3.Lerp(transform.position, targetPosition, movementTime);
+            if (movementTime > 0.2f)
+            {
+                moving = false;
+            }
+        }
+    }
     public void DoMove(direccion dir)
     {
         Tile posible = currentTile.TryNextMove(dir);
         if (posible != null)
         {
             //move
-            this.transform.position = posible.transform.position + new Vector3(0, 2, 0);
+            //transform.position = posible.transform.position + new Vector3(0, 0.71f, 0);
+            targetPosition = posible.transform.position + new Vector3(0, 0.71f, 0);
+            moving = true;
+            movementTime = 0;
             currentTile = posible;
         }
     }
-
     void manageInput()
     {
 
@@ -97,7 +112,7 @@ public class PlayerController : MonoBehaviour
             rotate = !rotate;
         }
 
-        if (!rotating && Input.GetKeyDown(KeyCode.W))
+        if (!rotating && !moving && Input.GetKeyDown(KeyCode.W))
         {
             if (!rotate)
             {
@@ -105,7 +120,7 @@ public class PlayerController : MonoBehaviour
                 GameManager.instance.decreaseActions();
             }
         }
-        else if (!rotating && Input.GetKeyDown(KeyCode.A))
+        else if (!rotating && !moving && Input.GetKeyDown(KeyCode.A))
         {
             //left
             if (!rotate)
@@ -115,7 +130,7 @@ public class PlayerController : MonoBehaviour
 
             GameManager.instance.decreaseActions();
         }
-        else if (!rotating && Input.GetKeyDown(KeyCode.S))
+        else if (!rotating && !moving && Input.GetKeyDown(KeyCode.S))
         {
             if (!rotate)
             {
@@ -123,7 +138,7 @@ public class PlayerController : MonoBehaviour
                 GameManager.instance.decreaseActions();
             }
         }
-        else if (!rotating && Input.GetKeyDown(KeyCode.D))
+        else if (!rotating && !moving && Input.GetKeyDown(KeyCode.D))
         {
             //right
             if (!rotate)
