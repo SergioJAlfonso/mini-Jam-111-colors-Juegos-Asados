@@ -64,9 +64,20 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
+    public void DoMove(direccion dir)
+    {
+        Tile posible = currentTile.TryNextMove(dir);
+        if (posible != null)
+        {
+            //move
+            this.transform.position = posible.transform.position + new Vector3(0, 2, 0);
+            currentTile = posible;
+        }
+    }
+
     void manageInput()
     {
-        Tile posible = null;
 
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -78,36 +89,29 @@ public class PlayerController : MonoBehaviour
         if (!rotating && Input.GetKeyDown(KeyCode.W))
         {
             if (!rotate)
-                posible = currentTile.TryNextMove(direccion.Up);
+                DoMove(direccion.Up);
         }
         else if (!rotating && Input.GetKeyDown(KeyCode.A))
         {
             //left
             if (!rotate)
-                posible = currentTile.TryNextMove(direccion.Left);
+                DoMove(direccion.Left);
             else
                 startRotation(90);
         }
         else if (!rotating && Input.GetKeyDown(KeyCode.S))
         {
             if (!rotate)
-                posible = currentTile.TryNextMove(direccion.Down);
+                DoMove(direccion.Down);
             //down
         }
         else if (!rotating && Input.GetKeyDown(KeyCode.D))
         {
             //right
             if (!rotate)
-                posible = currentTile.TryNextMove(direccion.Right);
+                DoMove(direccion.Right);
             else
                 startRotation(-90);
-        }
-
-        if (posible != null)
-        {
-            //move
-            this.transform.position = posible.transform.position + new Vector3(0, 2, 0);
-            currentTile = posible;
         }
     }
 }

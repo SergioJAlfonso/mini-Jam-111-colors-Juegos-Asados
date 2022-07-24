@@ -38,6 +38,8 @@ public class Enemy : MonoBehaviour
             //move
             this.transform.position = nextTile.transform.position + new Vector3(0, 2, 0);
             currentTile = nextTile;
+            //move player also
+            player.DoMove(dir);
         }
 
     }
