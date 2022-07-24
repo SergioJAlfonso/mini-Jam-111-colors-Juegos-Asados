@@ -30,6 +30,6 @@ public class Obstacle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        currentTile = myDetector.currentTile;
     }
 }

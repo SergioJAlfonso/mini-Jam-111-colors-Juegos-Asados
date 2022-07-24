@@ -69,7 +69,7 @@ public class PlayerController : MonoBehaviour
             if (rotateTime > 0.1f)
             {
                 rotating = false;
-                //octualizar obstaculos
+                //actualizar obstaculos
                 foreach (Transform a in obstacles)
                 {
                     a.gameObject.GetComponent<Obstacle>().refrexCurrentTile();
