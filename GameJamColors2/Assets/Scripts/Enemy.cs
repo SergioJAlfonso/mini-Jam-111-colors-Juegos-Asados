@@ -42,8 +42,14 @@ public class Enemy : MonoBehaviour
             targetPosition = nextTile.transform.position + new Vector3(0, 0.71f, 0);
             moving = true;
             movementTime = 0;
-
             currentTile = nextTile;
+
+            EndTile eT = nextTile.gameObject.GetComponent<EndTile>();
+            if (eT != null && !eT.heaven)
+            {
+                GameManager.instance.lost = true;
+            }
+
             //move player also
             player.DoMove(dir, true);
         }

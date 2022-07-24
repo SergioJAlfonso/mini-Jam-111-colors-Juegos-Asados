@@ -103,6 +103,12 @@ public class PlayerController : MonoBehaviour
             currentTile = posible;
             if(!enem)
                 GameManager.instance.decreaseActions();
+
+            EndTile eT = posible.gameObject.GetComponent<EndTile>();
+            if (eT != null && eT.heaven)
+            {
+                GameManager.instance.won = true;
+            }
         }
     }
     void manageInput()

@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     public float mainVolSlider = 0.5f,
                  SFXVolSlider = 0.5f,
                  musicVolSlider = 0.5f;
-    public bool gameIsPaused, needToPause, needToResume, playerTurn, moveZombie;
+    public bool gameIsPaused, needToPause, needToResume, playerTurn, moveZombie, won = false, lost = false;
     int currActions, maxActions = 2;
     float zombieTurnTime1 = 1.0f, zombieTurnTime2 = 1.0f, zombieTimer;
 
@@ -47,6 +47,14 @@ public class GameManager : MonoBehaviour
                 moveZombie = true;
                 playerTurn = true;
             }
+        }
+        if (won)
+        {
+            Debug.Log("Has ganado");
+        }
+        else if (lost)
+        {
+            Debug.Log("Has perdido");
         }
     }
 
