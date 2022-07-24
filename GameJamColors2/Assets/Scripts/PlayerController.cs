@@ -37,7 +37,8 @@ public class PlayerController : MonoBehaviour
         //utilizar la infor de eso y el tablero o la de la tile para navegar, de momento le tepeo a la posicion
 
         // Input
-        manageInput();
+        //if(GameManager.instance.playerTurn)
+            manageInput();
 
         // Rotacion en curso
         checkRotation();
@@ -50,16 +51,15 @@ public class PlayerController : MonoBehaviour
         rotating = true;
         rotate = false;
     }
-
     void checkRotation()
     {
         if (rotating)
         {
             rotateTime += Time.deltaTime * lerpSpeed;
             obstacles.rotation = Quaternion.Lerp(obstacles.rotation, targetRotation, rotateTime);
-            if (rotateTime > lerpSpeed)
+            if (rotateTime > 0.1f)
             {
-                Debug.Log("end rot");
+                //Debug.Log("end rot");
                 rotating = false;
             }
         }
@@ -70,15 +70,17 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            // Rotate map
-            // Indicar por UI que A izqda D dcha
-            rotate = true;
+            // Rotate map - Indicar por UI que A izqda D dcha
+            rotate = !rotate;
         }
 
         if (!rotating && Input.GetKeyDown(KeyCode.W))
         {
             if (!rotate)
+            {
                 posible = currentTile.TryNextMove(direccion.Up);
+                GameManager.instance.decreaseActions();
+            }
         }
         else if (!rotating && Input.GetKeyDown(KeyCode.A))
         {
@@ -87,12 +89,17 @@ public class PlayerController : MonoBehaviour
                 posible = currentTile.TryNextMove(direccion.Left);
             else
                 startRotation(90);
+
+            GameManager.instance.decreaseActions();
         }
         else if (!rotating && Input.GetKeyDown(KeyCode.S))
         {
-            if (!rotate)
-                posible = currentTile.TryNextMove(direccion.Down);
             //down
+            if (!rotate)
+            {
+                posible = currentTile.TryNextMove(direccion.Down);
+                GameManager.instance.decreaseActions();
+            }
         }
         else if (!rotating && Input.GetKeyDown(KeyCode.D))
         {
@@ -101,6 +108,8 @@ public class PlayerController : MonoBehaviour
                 posible = currentTile.TryNextMove(direccion.Right);
             else
                 startRotation(-90);
+
+            GameManager.instance.decreaseActions();
         }
 
         if (posible != null)

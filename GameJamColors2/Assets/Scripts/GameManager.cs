@@ -10,7 +10,8 @@ public class GameManager : MonoBehaviour
     public float mainVolSlider = 0.5f,
                  SFXVolSlider = 0.5f,
                  musicVolSlider = 0.5f;
-    public bool gameIsPaused, needToPause, needToResume;
+    public bool gameIsPaused, needToPause, needToResume, playerTurn;
+    int currActions, maxActions = 2;
 
     void Awake()
     {
@@ -29,6 +30,8 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        playerTurn = true;
+        currActions = maxActions;
     }
 
     // Update is called once per frame
@@ -49,4 +52,15 @@ public class GameManager : MonoBehaviour
     {
         SFXVolSlider = volume;
     }
+    public void decreaseActions()
+    {
+        currActions--;
+        if(currActions <= 0)
+        {
+            currActions = maxActions;
+            playerTurn = false;
+            Debug.Log("Fin de turno");
+        }
+    }
+       
 }
