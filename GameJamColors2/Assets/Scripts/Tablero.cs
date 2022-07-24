@@ -32,6 +32,16 @@ public class Tablero : MonoBehaviour
         // public int coste;
     }
 
+    private struct vertex
+    {
+        public int index;
+        public float distancia;
+        public vertex(int v_, float c)
+        {
+            index = v_;
+            distancia = c;
+        }
+    }
 
     void Start()
     {
@@ -111,6 +121,96 @@ public class Tablero : MonoBehaviour
         Instantiate(Resources.Load("HellDeco") as GameObject, transform.GetChild(transform.childCount - x).transform);
     }
 
+
+    public direccion DjistraAStarFromTo(int ori, int dest)
+    {
+        //coordenadas de destino para calcular la siguiente casilla mas cercana e ir tirando por ahi el algoritmo
+        Vector2 destCord = IndexToCoord(dest);
+
+        int v = ori;
+        List<vertex> q = new List<vertex>();
+
+        int[] previous = new int[indexes.Length];
+        for (int i = 0; i < previous.Length; i++)
+            previous[i] = -1;
+        previous[v] = v;
+
+        q.Add(new vertex(v,0));
+
+        while (q.Count != 0)
+        {
+            v = q[0].index;
+            q.RemoveAt(0);
+
+            //Si src (v) == dst, construimos el camino          //Si el nodo actual es el de destino construimos el camino
+            if (v == dest)
+            {
+                //recorremos la lista de previus hasta llenar a nuestra origen;
+                int ant = dest;
+                v = previous[v];
+                while (previous[v] != ori)
+                {
+                    ant = v;
+                    v = previous[v];
+                }
+                //tenemos los dos ultimos y queda calcular cual iba a ser el movimiento, Up Down...
+                int[] neigh = { indexes[v].up, indexes[v].down, indexes[v].left, indexes[v].right };
+
+                for (int i = 0; i < neigh.Length; i++)
+                {
+                    if (neigh[i] == ant)
+                    {
+                        return (direccion)i;
+                    }
+                }
+
+            }
+
+
+            //meter los vecinos de v en q
+            int[] neighbours = { indexes[v].up, indexes[v].left, indexes[v].down, indexes[v].right};
+
+            foreach (int n in neighbours)
+            {
+                if (n != -1)
+                {
+                    if ( previous[n] != -1)
+                        continue;
+                    previous[n] = v; // El vecino n tiene de 'padre' a v
+
+                    q.Add(new vertex(n, IndexDist(n,dest)));
+                    //ordenar por distancia a objetivo
+                    q.Sort(SortByScore);
+                }
+            }
+            
+
+        }
+
+        //cuadno haya terminao si es que termina, una direcciion no valida
+        return new direccion();
+
+    }
+
+    private int SortByScore(vertex x, vertex y)
+    {
+        return x.distancia.CompareTo(y.distancia);
+    }
+
+    float IndexDist(int ori, int dest)
+    {
+        Vector3 posA = tiles[ori].transform.position;
+        Vector3 posB = tiles[dest].transform.position;
+        return Vector3.Distance(posA, posB);
+    }
+
+
+    public int ExitIndex(bool heaven)
+    {
+        if (heaven) return 0;
+        else return transform.childCount - 1;
+    }
+
     public Vector2 IndexToCoord(int index)
     {
         Vector2 coord;
@@ -170,30 +270,61 @@ public class Tablero : MonoBehaviour
         else
         {
             indexes[id].transitable = false;
-            string route = "../Prefabs/";
+            string route = "";
             int obsSize = 0;
             switch (x)
             {
                 //Modificar obsSize con los prefabs de cada carpeta
                 case '1':
                     route += "Obs1/";
-
+                    obsSize = 5;
                     route += rand.Next(0, obsSize);
                     break;
                 case '2':
                     route += "Obs2/";
-
+                    obsSize = 4;
                     route += rand.Next(0, obsSize);
+                    break;
+                case '3':
+                    route += "Obs3x3/";
+                    obsSize = 2;
+                    route += rand.Next(0, obsSize);
+                    break;
+                case '4':
+                    route += "ObsL/";
+                    obsSize = 4;
+                    route += rand.Next(0, obsSize);
+                    break;
+                case '5':
+                    route += "ObsL90/";
+                    obsSize = 4;
+                    route += rand.Next(0, obsSize);
+                    break;
+                case '6':
+                    route += "ObsL180/";
+                    obsSize = 4;
+                    route += rand.Next(0, obsSize);
+                    break;
+                case '7':
+                    route += "ObsL270/";
+                    obsSize = 4;
+                    route += rand.Next(0, obsSize);
+                    break;
+                default:
                     break;
             }
             if(obsSize != 0)
+            {
+                Debug.Log(route);
                 Instantiate(Resources.Load(route) as GameObject, transform.GetChild(id).transform);
+            }
         }
     }
 
-    // Update is called once per frame
-    void Update()
+   
+    public void ChangeTransitable(int id, bool walkable)
     {
-
+        indexes[id].transitable = walkable;
     }
+
 }

@@ -37,7 +37,8 @@ public class PlayerController : MonoBehaviour
         //utilizar la infor de eso y el tablero o la de la tile para navegar, de momento le tepeo a la posicion
 
         // Input
-        manageInput();
+        //if(GameManager.instance.playerTurn)
+            manageInput();
 
         // Rotacion en curso
         checkRotation();
@@ -49,65 +50,88 @@ public class PlayerController : MonoBehaviour
         rotateTime = 0;
         rotating = true;
         rotate = false;
-    }
+        //desocupar todas las casillas de obstaculos
+        foreach (Transform a in obstacles)
+        {
+            a.gameObject.GetComponent<Obstacle>().ChangeWalkable(true);
+        }
 
+    }
     void checkRotation()
     {
         if (rotating)
         {
             rotateTime += Time.deltaTime * lerpSpeed;
             obstacles.rotation = Quaternion.Lerp(obstacles.rotation, targetRotation, rotateTime);
-            if (rotateTime > lerpSpeed)
+            if (rotateTime > 0.1f)
             {
-                Debug.Log("end rot");
+                //Debug.Log("end rot");
                 rotating = false;
+                //octualizar obstaculos
+                foreach (Transform a in obstacles)
+                {
+                    a.gameObject.GetComponent<Obstacle>().refrexCurrentTile();
+                    a.gameObject.GetComponent<Obstacle>().ChangeWalkable(false);
+                }
             }
         }
     }
-    void manageInput()
+
+    public void DoMove(direccion dir)
     {
-        Tile posible = null;
-
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            // Rotate map
-            // Indicar por UI que A izqda D dcha
-            rotate = true;
-        }
-
-        if (!rotating && Input.GetKeyDown(KeyCode.W))
-        {
-            if (!rotate)
-                posible = currentTile.TryNextMove(direccion.Up);
-        }
-        else if (!rotating && Input.GetKeyDown(KeyCode.A))
-        {
-            //left
-            if (!rotate)
-                posible = currentTile.TryNextMove(direccion.Left);
-            else
-                startRotation(90);
-        }
-        else if (!rotating && Input.GetKeyDown(KeyCode.S))
-        {
-            if (!rotate)
-                posible = currentTile.TryNextMove(direccion.Down);
-            //down
-        }
-        else if (!rotating && Input.GetKeyDown(KeyCode.D))
-        {
-            //right
-            if (!rotate)
-                posible = currentTile.TryNextMove(direccion.Right);
-            else
-                startRotation(-90);
-        }
-
+        Tile posible = currentTile.TryNextMove(dir);
         if (posible != null)
         {
             //move
             this.transform.position = posible.transform.position + new Vector3(0, 2, 0);
             currentTile = posible;
+        }
+    }
+
+    void manageInput()
+    {
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            // Rotate map - Indicar por UI que A izqda D dcha
+            rotate = !rotate;
+        }
+
+        if (!rotating && Input.GetKeyDown(KeyCode.W))
+        {
+            if (!rotate)
+            {
+                DoMove(direccion.Up);
+                GameManager.instance.decreaseActions();
+            }
+        }
+        else if (!rotating && Input.GetKeyDown(KeyCode.A))
+        {
+            //left
+            if (!rotate)
+                DoMove(direccion.Left);
+            else
+                startRotation(90);
+
+            GameManager.instance.decreaseActions();
+        }
+        else if (!rotating && Input.GetKeyDown(KeyCode.S))
+        {
+            if (!rotate)
+            {
+                DoMove(direccion.Down);
+                GameManager.instance.decreaseActions();
+            }
+        }
+        else if (!rotating && Input.GetKeyDown(KeyCode.D))
+        {
+            //right
+            if (!rotate)
+                DoMove(direccion.Right);
+            else
+                startRotation(-90);
+
+            GameManager.instance.decreaseActions();
         }
     }
 }
