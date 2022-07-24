@@ -270,24 +270,54 @@ public class Tablero : MonoBehaviour
         else
         {
             indexes[id].transitable = false;
-            string route = "../Prefabs/";
+            string route = "";
             int obsSize = 0;
             switch (x)
             {
                 //Modificar obsSize con los prefabs de cada carpeta
                 case '1':
                     route += "Obs1/";
-
+                    obsSize = 5;
                     route += rand.Next(0, obsSize);
                     break;
                 case '2':
                     route += "Obs2/";
-
+                    obsSize = 4;
                     route += rand.Next(0, obsSize);
+                    break;
+                case '3':
+                    route += "Obs3x3/";
+                    obsSize = 2;
+                    route += rand.Next(0, obsSize);
+                    break;
+                case '4':
+                    route += "ObsL/";
+                    obsSize = 4;
+                    route += rand.Next(0, obsSize);
+                    break;
+                case '5':
+                    route += "ObsL90/";
+                    obsSize = 4;
+                    route += rand.Next(0, obsSize);
+                    break;
+                case '6':
+                    route += "ObsL180/";
+                    obsSize = 4;
+                    route += rand.Next(0, obsSize);
+                    break;
+                case '7':
+                    route += "ObsL270/";
+                    obsSize = 4;
+                    route += rand.Next(0, obsSize);
+                    break;
+                default:
                     break;
             }
             if(obsSize != 0)
+            {
+                Debug.Log(route);
                 Instantiate(Resources.Load(route) as GameObject, transform.GetChild(id).transform);
+            }
         }
     }
 
