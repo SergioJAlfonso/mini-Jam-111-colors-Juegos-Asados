@@ -291,9 +291,10 @@ public class Tablero : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+   
+    public void ChangeTransitable(int id, bool walkable)
     {
-
+        indexes[id].transitable = walkable;
     }
+
 }

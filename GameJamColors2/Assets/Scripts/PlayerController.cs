@@ -50,6 +50,12 @@ public class PlayerController : MonoBehaviour
         rotateTime = 0;
         rotating = true;
         rotate = false;
+        //desocupar todas las casillas de obstaculos
+        foreach (Transform a in obstacles)
+        {
+            a.gameObject.GetComponent<Obstacle>().ChangeWalkable(true);
+        }
+
     }
     void checkRotation()
     {
@@ -61,12 +67,29 @@ public class PlayerController : MonoBehaviour
             {
                 //Debug.Log("end rot");
                 rotating = false;
+                //octualizar obstaculos
+                foreach (Transform a in obstacles)
+                {
+                    a.gameObject.GetComponent<Obstacle>().refrexCurrentTile();
+                    a.gameObject.GetComponent<Obstacle>().ChangeWalkable(false);
+                }
             }
         }
     }
+
+    public void DoMove(direccion dir)
+    {
+        Tile posible = currentTile.TryNextMove(dir);
+        if (posible != null)
+        {
+            //move
+            this.transform.position = posible.transform.position + new Vector3(0, 2, 0);
+            currentTile = posible;
+        }
+    }
+
     void manageInput()
     {
-        Tile posible = null;
 
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -78,7 +101,7 @@ public class PlayerController : MonoBehaviour
         {
             if (!rotate)
             {
-                posible = currentTile.TryNextMove(direccion.Up);
+                DoMove(direccion.Up);
                 GameManager.instance.decreaseActions();
             }
         }
@@ -86,7 +109,7 @@ public class PlayerController : MonoBehaviour
         {
             //left
             if (!rotate)
-                posible = currentTile.TryNextMove(direccion.Left);
+                DoMove(direccion.Left);
             else
                 startRotation(90);
 
@@ -94,10 +117,9 @@ public class PlayerController : MonoBehaviour
         }
         else if (!rotating && Input.GetKeyDown(KeyCode.S))
         {
-            //down
             if (!rotate)
             {
-                posible = currentTile.TryNextMove(direccion.Down);
+                DoMove(direccion.Down);
                 GameManager.instance.decreaseActions();
             }
         }
@@ -105,18 +127,11 @@ public class PlayerController : MonoBehaviour
         {
             //right
             if (!rotate)
-                posible = currentTile.TryNextMove(direccion.Right);
+                DoMove(direccion.Right);
             else
                 startRotation(-90);
 
             GameManager.instance.decreaseActions();
-        }
-
-        if (posible != null)
-        {
-            //move
-            this.transform.position = posible.transform.position + new Vector3(0, 2, 0);
-            currentTile = posible;
         }
     }
 }

@@ -20,4 +20,12 @@ public class Tile : MonoBehaviour
         }
         return null;
     }
+
+
+
+
+    public void ChangeTransitable(bool ocuppied)
+    {
+        table.ChangeTransitable(index, ocuppied);
+    }
 }
